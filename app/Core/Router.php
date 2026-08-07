@@ -5,10 +5,10 @@ class Router{
 
     private array $routes = [];
 
-    public function dispatch($request){
+    public function dispatch(Request $request){
 
         foreach ($this->routes as $route){
-            if($request["method"] === $route["method"] && $request["path"] === $route["path"]){
+            if($request->method() === $route["method"] && $request->path() === $route["path"]){
                 $controller = new $route["handler"][0];
                 return call_user_func([$controller, $route["handler"][1]]);
             }
