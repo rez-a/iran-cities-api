@@ -1,0 +1,15 @@
+{
+    "name": "reza/iran",
+    "autoload": {
+        "psr-4": {
+            "Reza\\Iran\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "rez-a",
+            "email": "reza.hasani11177@gmail.com"
+        }
+    ],
+    "require": {}
+}
