@@ -1,9 +1,8 @@
 <?php
+use Iran\Controllers\CitiesController;
 
 $router->addRoute(
     'GET',
         '/api/v1/cities',
-    function (){
-        return 'Cities api';
-    }
+    [CitiesController::class , 'index']
 );
