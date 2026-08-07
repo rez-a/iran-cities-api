@@ -2,7 +2,7 @@
     "name": "reza/iran",
     "autoload": {
         "psr-4": {
-            "Reza\\Iran\\": "app/"
+            "Iran\\": "app/"
         }
     },
     "authors": [
