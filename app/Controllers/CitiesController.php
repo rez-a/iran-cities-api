@@ -2,11 +2,16 @@
 namespace Iran\Controllers;
 
 use Iran\Core\Response;
+use Iran\Models\CitiesModel;
 
 class CitiesController{
-
+    private CitiesModel $model;
+    public function __construct(CitiesModel $model){
+        $this->model = $model;
+    }
     public function index()
     {
-        return Response::json([] , 200 , 'success');
+        $cities = $this->model->getAll();
+        return Response::json($cities , 200 , "success");
     }
 }

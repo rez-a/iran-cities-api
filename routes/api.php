@@ -4,5 +4,5 @@ use Iran\Controllers\CitiesController;
 $router->addRoute(
     'GET',
         '/api/v1/cities',
-    [CitiesController::class , 'index']
+    [$controller , 'index']
 );

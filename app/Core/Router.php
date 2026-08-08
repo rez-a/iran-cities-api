@@ -9,8 +9,7 @@ class Router{
 
         foreach ($this->routes as $route){
             if($request->method() === $route["method"] && $request->path() === $route["path"]){
-                $controller = new $route["handler"][0];
-                return call_user_func([$controller, $route["handler"][1]]);
+                return call_user_func($route["handler"]);
             }
         }
             return "404 not found";
