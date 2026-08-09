@@ -16,6 +16,9 @@ class CitiesController{
     }
     public function getById($id){
         $city = $this->model->getCity($id);
+        if(!$city){
+            return Response::json(null, 404 , "city not found");
+        }
         return Response::json($city, 200 , "success");
     }
 }
