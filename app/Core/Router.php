@@ -2,8 +2,10 @@
 namespace Iran\Core;
 
 
+use Exception;
 use ReflectionException;
 use Iran\Core\Response;
+use ReflectionMethod;
 
 class Router{
 
@@ -33,6 +35,30 @@ class Router{
 
     /**
      * @throws ReflectionException
+     * @throws Exception
+     */
+    private function resolveArguments(object $controller , string $method , array $routeParameters , Request $request): array
+    {
+        $reflection = new ReflectionMethod($controller , $method);
+        $arguments = [];
+        foreach($reflection->getParameters() as $parameter){
+            $parameterName = $parameter->getName();
+            if(key_exists($parameterName , $routeParameters)){
+                $arguments[] = $routeParameters[$parameterName];
+                continue;
+            }
+            if($parameterName === 'data'){
+                $arguments[] = $request->body();
+                continue;
+            }
+
+            throw new Exception("cannot resolve parameter : {$parameterName}");
+        }
+        return $arguments;
+    }
+
+    /**
+     * @throws ReflectionException
      */
     public function dispatch(Request $request){
 
@@ -44,7 +70,9 @@ class Router{
             [$controller , $method] = $route["handler"];
             $controller = $this->container->make($controller);
 
-            return call_user_func([$controller , $method] , ...array_values($parameters));
+            $arguments = $this->resolveArguments($controller , $method , $parameters , $request);
+
+            return call_user_func([$controller , $method] , ...array_values($arguments));
 
         }
             return Response::json(null, 404 , "route not found");
