@@ -3,6 +3,7 @@ namespace Iran\Core;
 
 
 use ReflectionException;
+use Iran\Core\Response;
 
 class Router{
 
@@ -46,7 +47,7 @@ class Router{
             return call_user_func([$controller , $method] , ...array_values($parameters));
 
         }
-            return "404 not found";
+            return Response::json(null, 404 , "route not found");
     }
 
     public function addRoute($method , $path , $handler){
