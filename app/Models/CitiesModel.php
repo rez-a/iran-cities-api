@@ -15,4 +15,11 @@ class CitiesModel{
         $statement = $this->connection->query($sql);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getCity($id){
+        $sql = "SELECT * from city where id = :id";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute(['id' => $id]);
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
 }
