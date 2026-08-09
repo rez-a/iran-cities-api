@@ -14,4 +14,7 @@ class CitiesController{
         $cities = $this->model->getAll();
         return Response::json($cities , 200 , "success");
     }
+    public function show($id){
+        return Response::json(["id" => $id], 200 , "success");
+    }
 }
