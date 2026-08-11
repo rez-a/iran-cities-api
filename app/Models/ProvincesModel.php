@@ -41,4 +41,15 @@ class ProvincesModel{
         $statement->execute([':name' => $name, ':id' => $id]);
         return $id;
     }
+
+    public function deleteProvinces( int $id){
+        $province = $this->getProvinces($id);
+        if(!$province){
+            return false;
+        }
+        $sql = "DELETE FROM province WHERE id = :id";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([':id' => $id]);
+        return $id;
+    }
 }

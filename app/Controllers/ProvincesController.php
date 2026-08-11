@@ -46,4 +46,19 @@ class ProvincesController{
         }
 
     }
+
+
+    public  function delete(int $id)
+    {
+        try{
+            $provinceId = $this->model->deleteProvinces($id);
+            if($provinceId === false){
+                return Response::json(null, 404 , "province not found");
+            }
+            return Response::json(['id'=>$provinceId] , 200 , "province deleted successfully");
+        }catch (PDOException $e){
+            return Response::json(null, 500 , "failed to delete province");
+        }
+
+    }
 }
