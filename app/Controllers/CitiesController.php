@@ -15,7 +15,7 @@ class CitiesController{
         $cities = $this->model->getAll();
         return Response::json($cities , 200 , "success");
     }
-    public function getById(string $id){
+    public function getById(int $id){
         $city = $this->model->getCity($id);
         if(!$city){
             return Response::json(null, 404 , "city not found");
@@ -30,5 +30,17 @@ class CitiesController{
        }catch (PDOException $e){
            return  Response::json(null, 500 , "failed to create city");
        }
+    }
+
+    public function update(int $id , array $data){
+        try{
+            $cityId = $this->model->updateCity($id , $data['name']);
+            if(!$cityId){
+                return Response::json(null, 404 , "city not found");
+            }
+            return Response::json(['id'=>$cityId] , 200 , "city updated successfully");
+        }catch(PDOException $e){
+            return Response::json(null , 500 , "failed to update city");
+        }
     }
 }

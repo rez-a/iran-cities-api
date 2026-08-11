@@ -32,6 +32,26 @@ class CitiesModel{
         ]);
 
         return $this->connection->lastInsertId();
+    }
 
+    public function updateCity(int $id , string $name){
+        $checkCitySql = "SELECT * from city WHERE id = :id";
+        $checkStatement = $this->connection->prepare($checkCitySql);
+        $checkStatement->execute(['id' => $id]);
+        $city = $checkStatement->fetch(PDO::FETCH_ASSOC);
+
+        if(!$city){
+            return  false;
+        }
+
+
+        $sql = "UPDATE city SET name = :name WHERE id = :id";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([
+            'id' => $id,
+            'name' => $name
+        ]);
+
+        return $id;
     }
 }
