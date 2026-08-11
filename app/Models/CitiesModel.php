@@ -35,21 +35,27 @@ class CitiesModel{
     }
 
     public function updateCity(int $id , string $name){
-        $checkCitySql = "SELECT * from city WHERE id = :id";
-        $checkStatement = $this->connection->prepare($checkCitySql);
-        $checkStatement->execute(['id' => $id]);
-        $city = $checkStatement->fetch(PDO::FETCH_ASSOC);
-
-        if(!$city){
-            return  false;
-        }
-
+        $city = $this->getCity($id);
+        if(!$city){ return false; }
 
         $sql = "UPDATE city SET name = :name WHERE id = :id";
         $statement = $this->connection->prepare($sql);
         $statement->execute([
             'id' => $id,
             'name' => $name
+        ]);
+
+        return $id;
+    }
+
+    public function deleteCity(int $id){
+        $city = $this->getCity($id);
+        if(!$city){ return false; }
+
+        $sql = "DELETE FROM city WHERE id = :id";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([
+            'id' => $id,
         ]);
 
         return $id;

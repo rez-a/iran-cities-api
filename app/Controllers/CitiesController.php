@@ -10,11 +10,13 @@ class CitiesController{
     public function __construct(CitiesModel $model){
         $this->model = $model;
     }
+
     public function index()
     {
         $cities = $this->model->getAll();
         return Response::json($cities , 200 , "success");
     }
+
     public function getById(int $id){
         $city = $this->model->getCity($id);
         if(!$city){
@@ -35,12 +37,26 @@ class CitiesController{
     public function update(int $id , array $data){
         try{
             $cityId = $this->model->updateCity($id , $data['name']);
-            if(!$cityId){
+            if($cityId === false){
                 return Response::json(null, 404 , "city not found");
             }
             return Response::json(['id'=>$cityId] , 200 , "city updated successfully");
         }catch(PDOException $e){
             return Response::json(null , 500 , "failed to update city");
         }
+    }
+
+    public function delete(int $id){
+        try{
+            $cityId = $this->model->deleteCity($id);
+            if($cityId === false){
+                return Response::json(null, 404 , "city not found");
+            }
+            return Response::json(['id'=>$cityId] , 200 , "city deleted successfully");
+
+        }catch(PDOException $e){
+            return Response::json(null, 500 , "failed to delete city");
+        }
+
     }
 }
