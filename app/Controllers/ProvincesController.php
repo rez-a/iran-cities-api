@@ -27,9 +27,23 @@ class ProvincesController{
     public function create(array $data){
         try{
             $provinceId = $this->model->createProvinces($data['name']);
-            return Response::json($provinceId , 200 , "success");
+            return Response::json($provinceId , 201 , "success");
         }catch(PDOException $e){
             return Response::json(null, 500 , "failed to create province");
         }
+    }
+
+    public  function update(int $id , array $data)
+    {
+        try{
+            $provinceId = $this->model->updateProvinces($id, $data['name']);
+            if($provinceId === false){
+                return Response::json(null, 404 , "province not found");
+            }
+            return Response::json(['id'=>$provinceId] , 200 , "province updated successfully");
+        }catch (PDOException $e){
+            return Response::json(null, 500 , "failed to update province");
+        }
+
     }
 }

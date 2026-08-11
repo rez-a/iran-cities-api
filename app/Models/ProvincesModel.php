@@ -30,4 +30,15 @@ class ProvincesModel{
         $statement->execute([':name' => $name]);
         return $this->connection->lastInsertId();
     }
+
+    public function updateProvinces( int $id , string $name){
+        $province = $this->getProvinces($id);
+        if(!$province){
+            return false;
+        }
+        $sql = "UPDATE province SET name = :name WHERE id = :id";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([':name' => $name, ':id' => $id]);
+        return $id;
+    }
 }
