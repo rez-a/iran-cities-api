@@ -16,10 +16,18 @@ class ProvincesModel{
         $statement = $this->connection->query($sql);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getProvinces($id){
+    public function getProvinces(int $id){
         $sql = "SELECT * FROM province WHERE id = :id";
         $statement = $this->connection->prepare($sql);
         $statement->execute([':id' => $id]);
         return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public  function createProvinces(string $name)
+    {
+        $sql = "INSERT INTO province (name) VALUES (:name)";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([':name' => $name]);
+        return $this->connection->lastInsertId();
     }
 }
