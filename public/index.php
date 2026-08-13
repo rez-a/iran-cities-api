@@ -13,7 +13,7 @@ $router = new Router($container);
 $request = new Request();
 
 
-require_once "../routes/api.php";
+require_once "../routes/v2/api.php";
 
 
 echo $router->dispatch($request);
