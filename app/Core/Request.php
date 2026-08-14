@@ -8,6 +8,10 @@ class Request{
     public function path(){
         return parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
     }
+
+    public function query():array{
+        return $_GET;
+    }
     public function body(){
         $content = file_get_contents("php://input");
         return json_decode($content, true) ?? [];

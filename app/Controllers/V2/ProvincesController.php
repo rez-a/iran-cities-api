@@ -1,0 +1,76 @@
+<?php
+namespace Iran\Controllers\V2;
+
+
+use Iran\Core\Response;
+use Iran\Models\ProvincesModel;
+use PDOException;
+
+class ProvincesController{
+    private ProvincesModel $model;
+    public function __construct(ProvincesModel $model){
+        $this->model = $model;
+    }
+
+    public function index(int $page = 1, int $limit = 10)
+    {
+        $offset = ($page - 1) * $limit;
+        $provinces = $this->model->getPaginated($limit, $offset);
+        $totalCities = $this->model->getTotal();
+        $lastPage = (int) ceil($totalCities / $limit);
+        return Response::json([
+            'items'=>$provinces,
+            'pagination' => [
+                'total' => $totalCities,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+                'per_page' => $limit,
+            ]
+        ], 200 , "success");
+    }
+    public function getById(int $id){
+        $provinces = $this->model->getProvinces($id);
+        if(!$provinces){
+            return Response::json(null, 404 , "provinces not found");
+        }
+        return Response::json($provinces , 200 , "success");
+    }
+
+    public function create(array $data){
+        try{
+            $provinceId = $this->model->createProvinces($data['name']);
+            return Response::json($provinceId , 201 , "success");
+        }catch(PDOException $e){
+            return Response::json(null, 500 , "failed to create province");
+        }
+    }
+
+    public  function update(int $id , array $data)
+    {
+        try{
+            $provinceId = $this->model->updateProvinces($id, $data['name']);
+            if($provinceId === false){
+                return Response::json(null, 404 , "province not found");
+            }
+            return Response::json(['id'=>$provinceId] , 200 , "province updated successfully");
+        }catch (PDOException $e){
+            return Response::json(null, 500 , "failed to update province");
+        }
+
+    }
+
+
+    public  function delete(int $id)
+    {
+        try{
+            $provinceId = $this->model->deleteProvinces($id);
+            if($provinceId === false){
+                return Response::json(null, 404 , "province not found");
+            }
+            return Response::json(['id'=>$provinceId] , 200 , "province deleted successfully");
+        }catch (PDOException $e){
+            return Response::json(null, 500 , "failed to delete province");
+        }
+
+    }
+}

@@ -1,5 +1,5 @@
 <?php
-namespace Iran\Controllers;
+namespace Iran\Controllers\V1;
 
 
 use Iran\Core\Response;
@@ -12,9 +12,10 @@ class ProvincesController{
         $this->model = $model;
     }
 
-    public function index(){
+    public function index()
+    {
         $provinces = $this->model->getAll();
-        return Response::json($provinces , 200 , "success");
+        return Response::json($provinces, 200 , "success");
     }
     public function getById(int $id){
         $provinces = $this->model->getProvinces($id);

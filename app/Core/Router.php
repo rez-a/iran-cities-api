@@ -40,15 +40,25 @@ class Router{
     private function resolveArguments(object $controller , string $method , array $routeParameters , Request $request): array
     {
         $reflection = new ReflectionMethod($controller , $method);
+        $query = $request->query();
         $arguments = [];
         foreach($reflection->getParameters() as $parameter){
             $parameterName = $parameter->getName();
+
             if(key_exists($parameterName , $routeParameters)){
                 $arguments[] = $routeParameters[$parameterName];
                 continue;
             }
+            if(key_exists($parameterName , $query)){
+                $arguments[] = $query[$parameterName];
+                continue;
+            }
             if($parameterName === 'data'){
                 $arguments[] = $request->body();
+                continue;
+            }
+            if($parameter->isDefaultValueAvailable()){
+                $arguments[] = $parameter->getDefaultValue();
                 continue;
             }
 

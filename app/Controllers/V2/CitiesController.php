@@ -1,5 +1,5 @@
 <?php
-namespace Iran\Controllers;
+namespace Iran\Controllers\V2;
 
 use Iran\Core\Response;
 use Iran\Models\CitiesModel;
@@ -11,10 +11,21 @@ class CitiesController{
         $this->model = $model;
     }
 
-    public function index()
+    public function index(int $page = 1, int $limit = 10)
     {
-        $cities = $this->model->getAll();
-        return Response::json($cities , 200 , "success");
+        $offset = ($page - 1) * $limit;
+        $cities = $this->model->getPaginated($limit, $offset);
+        $totalCities = $this->model->getTotal();
+        $lastPage = (int) ceil($totalCities / $limit);
+        return Response::json([
+            'items'=>$cities,
+            'pagination' => [
+                'total' => $totalCities,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+                'per_page' => $limit,
+            ]
+        ], 200 , "success");
     }
 
     public function getById(int $id){
@@ -59,4 +70,5 @@ class CitiesController{
         }
 
     }
+
 }

@@ -1,8 +1,8 @@
 <?php
 
 
-use Iran\Controllers\CitiesController;
-use Iran\Controllers\ProvincesController;
+use Iran\Controllers\V2\CitiesController;
+use Iran\Controllers\V2\ProvincesController;
 
 $routes = [
     ['method' => 'GET', 'path' => '/api/v2/cities', 'handler' => [CitiesController::class, 'index']],

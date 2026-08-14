@@ -13,6 +13,7 @@ $router = new Router($container);
 $request = new Request();
 
 
+require_once "../routes/v1/api.php";
 require_once "../routes/v2/api.php";
 
 

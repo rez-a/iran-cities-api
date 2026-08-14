@@ -52,4 +52,21 @@ class ProvincesModel{
         $statement->execute([':id' => $id]);
         return $id;
     }
+
+    public function getPaginated(int $limit , int $offset)
+    {
+        $sql = 'SELECT * FROM province LIMIT :limit OFFSET :offset';
+        $statement = $this->connection->prepare($sql);
+        $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotal()
+    {
+        $sql = 'SELECT COUNT(*) FROM province';
+        $statement = $this->connection->query($sql);
+        return (int) $statement->fetchColumn();
+    }
 }
