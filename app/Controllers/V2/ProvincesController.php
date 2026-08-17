@@ -2,38 +2,47 @@
 namespace Iran\Controllers\V2;
 
 
+use Iran\Core\Request;
 use Iran\Core\Response;
 use Iran\Models\ProvincesModel;
+use Iran\Services\FieldFilter;
 use PDOException;
 
 class ProvincesController{
     private ProvincesModel $model;
-    public function __construct(ProvincesModel $model){
+    private FieldFilter $fieldFilter;
+    private array $allowedFields = ['id' , 'name' ];
+    public function __construct(ProvincesModel $model , FieldFilter $fieldFilter){
         $this->model = $model;
+        $this->fieldFilter = $fieldFilter;
     }
 
-    public function index(int $page = 1, int $limit = 10)
+    public function index( Request $request,int $page = 1, int $limit = 10)
     {
         $offset = ($page - 1) * $limit;
         $provinces = $this->model->getPaginated($limit, $offset);
-        $totalCities = $this->model->getTotal();
-        $lastPage = (int) ceil($totalCities / $limit);
+        $totalProvinces = $this->model->getTotal();
+        $lastPage = (int) ceil($totalProvinces / $limit);
+        $fields = $request->query()['fields'] ?? null;
+        $provinces = $this->fieldFilter->filter($provinces, $fields , $this->allowedFields);
         return Response::json([
             'items'=>$provinces,
             'pagination' => [
-                'total' => $totalCities,
+                'total' => $totalProvinces,
                 'current_page' => $page,
                 'last_page' => $lastPage,
                 'per_page' => $limit,
             ]
         ], 200 , "success");
     }
-    public function getById(int $id){
-        $provinces = $this->model->getProvinces($id);
-        if(!$provinces){
+    public function getById(Request $request , int $id){
+        $province = $this->model->getProvinces($id);
+        if(!$province){
             return Response::json(null, 404 , "provinces not found");
         }
-        return Response::json($provinces , 200 , "success");
+        $field = $request->query()['fields'] ?? null;
+        $province = $this->fieldFilter->filter([$province] , $field , $this->allowedFields);
+        return Response::json($province , 200 , "success");
     }
 
     public function create(array $data){

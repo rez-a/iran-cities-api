@@ -3,20 +3,27 @@ namespace Iran\Controllers\V2;
 
 use Iran\Core\Response;
 use Iran\Models\CitiesModel;
+use Iran\Services\FieldFilter;
 use PDOException;
+use Iran\Core\Request;
 
 class CitiesController{
     private CitiesModel $model;
-    public function __construct(CitiesModel $model){
+    private FieldFilter $fieldFilter;
+    private array $allowedFields = ['id' , 'name' , 'province_id'];
+    public function __construct(CitiesModel $model , FieldFilter $fieldFilter){
         $this->model = $model;
+        $this->fieldFilter = $fieldFilter;
     }
 
-    public function index(int $page = 1, int $limit = 10)
+    public function index(Request $request, int $page = 1, int $limit = 10)
     {
         $offset = ($page - 1) * $limit;
         $cities = $this->model->getPaginated($limit, $offset);
         $totalCities = $this->model->getTotal();
         $lastPage = (int) ceil($totalCities / $limit);
+        $field = $request->query()['fields'] ?? null;
+        $cities = $this->fieldFilter->filter($cities , $field , $this->allowedFields);
         return Response::json([
             'items'=>$cities,
             'pagination' => [
@@ -26,13 +33,16 @@ class CitiesController{
                 'per_page' => $limit,
             ]
         ], 200 , "success");
+
     }
 
-    public function getById(int $id){
+    public function getById(Request $request , int $id){
         $city = $this->model->getCity($id);
         if(!$city){
             return Response::json(null, 404 , "city not found");
         }
+        $field = $request->query()['fields'] ?? null;
+        $city = $this->fieldFilter->filter([$city] , $field , $this->allowedFields);
         return Response::json($city, 200 , "success");
     }
 

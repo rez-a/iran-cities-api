@@ -4,8 +4,8 @@ namespace Iran\Core;
 
 use Exception;
 use ReflectionException;
-use Iran\Core\Response;
 use ReflectionMethod;
+use InvalidArgumentException;
 
 class Router{
 
@@ -45,6 +45,11 @@ class Router{
         foreach($reflection->getParameters() as $parameter){
             $parameterName = $parameter->getName();
 
+            if($parameter->getType()?->getName() === Request::class){
+                $arguments[] = $request;
+                continue;
+            }
+
             if(key_exists($parameterName , $routeParameters)){
                 $arguments[] = $routeParameters[$parameterName];
                 continue;
@@ -80,9 +85,14 @@ class Router{
             [$controller , $method] = $route["handler"];
             $controller = $this->container->make($controller);
 
-            $arguments = $this->resolveArguments($controller , $method , $parameters , $request);
+            try{
+                $arguments = $this->resolveArguments($controller , $method , $parameters , $request);
+                return call_user_func([$controller , $method] , ...array_values($arguments));
+            }catch (InvalidArgumentException $exception){
+                return  Response::json(null , 400 , $exception->getMessage());
+            }
 
-            return call_user_func([$controller , $method] , ...array_values($arguments));
+
 
         }
             return Response::json(null, 404 , "route not found");
