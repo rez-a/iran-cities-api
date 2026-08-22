@@ -53,9 +53,11 @@ class ProvincesModel{
         return $id;
     }
 
-    public function getPaginated(int $limit , int $offset)
+    public function getPaginated(int $limit , int $offset, array $sort)
     {
-        $sql = 'SELECT * FROM province LIMIT :limit OFFSET :offset';
+        $sql = "SELECT * FROM province
+                ORDER BY {$sort['field']} {$sort['order']}
+                LIMIT :limit OFFSET :offset";
         $statement = $this->connection->prepare($sql);
         $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
         $statement->bindValue(':offset', $offset, PDO::PARAM_INT);

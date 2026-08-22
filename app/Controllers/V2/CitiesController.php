@@ -4,25 +4,33 @@ namespace Iran\Controllers\V2;
 use Iran\Core\Response;
 use Iran\Models\CitiesModel;
 use Iran\Services\FieldFilter;
+use Iran\Services\Ordering;
 use PDOException;
 use Iran\Core\Request;
 
 class CitiesController{
     private CitiesModel $model;
     private FieldFilter $fieldFilter;
+    private Ordering $ordering;
     private array $allowedFields = ['id' , 'name' , 'province_id'];
-    public function __construct(CitiesModel $model , FieldFilter $fieldFilter){
+    private array $allowedSortFields = ['id' , 'name' , 'province_id'];
+    private array $defaultSort = ['field'=>'id' , 'order'=>'ASC'];
+    public function __construct(CitiesModel $model , FieldFilter $fieldFilter , Ordering $ordering){
         $this->model = $model;
         $this->fieldFilter = $fieldFilter;
+        $this->ordering = $ordering;
     }
 
     public function index(Request $request, int $page = 1, int $limit = 10)
     {
+        $field = $request->query()['fields'] ?? null;
+        $sortField = $request->query()['sort'] ?? null;
+        $sort = $this->ordering->parse($sortField , $this->allowedSortFields , $this->defaultSort);
         $offset = ($page - 1) * $limit;
-        $cities = $this->model->getPaginated($limit, $offset);
+        $cities = $this->model->getPaginated($limit, $offset , $sort);
         $totalCities = $this->model->getTotal();
         $lastPage = (int) ceil($totalCities / $limit);
-        $field = $request->query()['fields'] ?? null;
+
         $cities = $this->fieldFilter->filter($cities , $field , $this->allowedFields);
         return Response::json([
             'items'=>$cities,

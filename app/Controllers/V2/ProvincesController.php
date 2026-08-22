@@ -6,24 +6,33 @@ use Iran\Core\Request;
 use Iran\Core\Response;
 use Iran\Models\ProvincesModel;
 use Iran\Services\FieldFilter;
+use Iran\Services\Ordering;
 use PDOException;
 
 class ProvincesController{
     private ProvincesModel $model;
     private FieldFilter $fieldFilter;
+    private Ordering $ordering;
     private array $allowedFields = ['id' , 'name' ];
-    public function __construct(ProvincesModel $model , FieldFilter $fieldFilter){
+    private array $allowedSortFields = ['id' , 'name' ];
+    private array $defaultSort = ['field'=>'id' , 'order'=>'ASC'];
+    public function __construct(ProvincesModel $model , FieldFilter $fieldFilter , Ordering $ordering){
         $this->model = $model;
         $this->fieldFilter = $fieldFilter;
+        $this->ordering = $ordering;
+
     }
 
     public function index( Request $request,int $page = 1, int $limit = 10)
     {
+        $fields = $request->query()['fields'] ?? null;
+        $sortField = $request->query()['sort'] ?? null;
+        $sort = $this->ordering->parse($sortField , $this->allowedSortFields , $this->defaultSort);
         $offset = ($page - 1) * $limit;
-        $provinces = $this->model->getPaginated($limit, $offset);
+        $provinces = $this->model->getPaginated($limit, $offset,$sort);
         $totalProvinces = $this->model->getTotal();
         $lastPage = (int) ceil($totalProvinces / $limit);
-        $fields = $request->query()['fields'] ?? null;
+
         $provinces = $this->fieldFilter->filter($provinces, $fields , $this->allowedFields);
         return Response::json([
             'items'=>$provinces,
