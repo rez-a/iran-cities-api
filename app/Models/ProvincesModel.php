@@ -17,6 +17,7 @@ class ProvincesModel{
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
     public function getProvinces(int $id){
+        var_dump('getProvinces');
         $sql = "SELECT * FROM province WHERE id = :id";
         $statement = $this->connection->prepare($sql);
         $statement->execute([':id' => $id]);
@@ -25,6 +26,7 @@ class ProvincesModel{
 
     public  function createProvinces(string $name)
     {
+        var_dump('createProvinces');
         $sql = "INSERT INTO province (name) VALUES (:name)";
         $statement = $this->connection->prepare($sql);
         $statement->execute([':name' => $name]);
@@ -32,6 +34,7 @@ class ProvincesModel{
     }
 
     public function updateProvinces( int $id , string $name){
+        var_dump('updateProvinces');
         $province = $this->getProvinces($id);
         if(!$province){
             return false;
@@ -43,6 +46,7 @@ class ProvincesModel{
     }
 
     public function deleteProvinces( int $id){
+        var_dump('deleteProvinces');
         $province = $this->getProvinces($id);
         if(!$province){
             return false;
@@ -55,6 +59,8 @@ class ProvincesModel{
 
     public function getPaginated(int $limit , int $offset, array $sort)
     {
+        var_dump('getPaginated');
+
         $sql = "SELECT * FROM province
                 ORDER BY {$sort['field']} {$sort['order']}
                 LIMIT :limit OFFSET :offset";

@@ -17,6 +17,7 @@ class CitiesModel{
     }
 
     public function getCity(int $id){
+        var_dump('getCity');
         $sql = "SELECT * from city where id = :id";
         $statement = $this->connection->prepare($sql);
         $statement->execute(['id' => $id]);
@@ -24,6 +25,8 @@ class CitiesModel{
     }
 
     public function createCity(string $name , int $province_id){
+        var_dump('createCity');
+
         $sql = "INSERT INTO city (name , province_id) VALUES (:name , :province_id)";
         $statement = $this->connection->prepare($sql);
         $statement->execute([
@@ -35,6 +38,8 @@ class CitiesModel{
     }
 
     public function updateCity(int $id , string $name){
+        var_dump('updateCity');
+
         $city = $this->getCity($id);
         if(!$city){ return false; }
 
@@ -49,6 +54,7 @@ class CitiesModel{
     }
 
     public function deleteCity(int $id){
+        var_dump('deleteCity');
         $city = $this->getCity($id);
         if(!$city){ return false; }
 
@@ -63,6 +69,7 @@ class CitiesModel{
 
     public function getPaginated(int $limit , int $offset , array $sort)
     {
+        var_dump('getPaginated');
         $sql = "SELECT * FROM city 
                 ORDER BY {$sort['field']} {$sort['order']}
                 LIMIT :limit OFFSET :offset ";

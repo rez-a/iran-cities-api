@@ -59,6 +59,7 @@ class Router{
                 continue;
             }
             if($parameterName === 'data'){
+
                 $arguments[] = $request->body();
                 continue;
             }
@@ -76,6 +77,7 @@ class Router{
      * @throws ReflectionException
      */
     public function dispatch(Request $request){
+
 
         foreach ($this->routes as $route){
             if($request->method() !== $route["method"]){ continue; }
