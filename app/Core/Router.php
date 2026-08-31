@@ -6,6 +6,8 @@ use Exception;
 use ReflectionException;
 use ReflectionMethod;
 use InvalidArgumentException;
+use Iran\Middleware\AuthMiddleware;
+use Iran\Middleware\RoleMiddleware;
 
 class Router{
 
@@ -84,6 +86,20 @@ class Router{
             $parameters = $this->matchRoute($request->path(), $route["path"]);
             if($parameters === false){ continue; }
 
+            if($route["auth"]){
+                $middleware = $this->container->make(AuthMiddleware::class);
+                $authResult = $middleware->handle($request);
+
+                if($authResult !== true){
+                    return $authResult;
+                }
+            }
+            if($route["role"] !== null){
+                $roleMiddleware = $this->container->make(RoleMiddleware::class);
+                $roleResult = $roleMiddleware->handle($request , $route["role"]);
+                if($roleResult !== true){ return $roleResult; }
+            }
+
             [$controller , $method] = $route["handler"];
             $controller = $this->container->make($controller);
 
@@ -100,11 +116,13 @@ class Router{
             return Response::json(null, 404 , "route not found");
     }
 
-    public function addRoute($method , $path , $handler){
+    public function addRoute($method , $path , $handler ,bool $auth = false ,?string $role = null ){
         $this->routes[] = [
             "method" => $method,
             "path" => $path,
-            "handler" => $handler
+            "handler" => $handler,
+            "auth" => $auth,
+            "role" => $role
         ];
     }
 

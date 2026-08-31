@@ -27,6 +27,8 @@ class CitiesController{
 
     public function index(Request $request, int $page = 1, int $limit = 10)
     {
+        var_dump($request->user());
+        die;
         $query = $request->query();
         $cacheKey = $this->cachePrefix.http_build_query($query);
         $cached = $this->cacheService->get($cacheKey);
